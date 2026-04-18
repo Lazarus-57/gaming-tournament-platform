@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Tournament Details')}"></head>
+<body class="dashboard-page">
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+    <div class="container mt-4 mb-4">
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Tournament Info -->
+        <div class="card glass-card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0"><i class="bi bi-trophy"></i> <span th:text="${tournament.name}">Tournament</span></h4>
+                <span class="status-badge" th:classappend="${'status-' + tournament.status.name().toLowerCase()}"
+                      th:text="${tournament.status}">Status</span>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Game:</strong> <span th:text="${tournament.gameTitle}">Game</span></p>
+                        <p><strong>Format:</strong> <span th:text="${tournament.format}">Format</span></p>
+                        <p><strong>Team Size:</strong> <span th:text="${tournament.teamSize}">1</span></p>
+                        <p><strong>Prize Pool:</strong> $<span th:text="${tournament.prizePool}">0</span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Registration:</strong>
+                            <span th:text="${tournament.registrationStart}">Start</span> to
+                            <span th:text="${tournament.registrationEnd}">End</span>
+                        </p>
+                        <p th:if="${tournament.rules != null and !tournament.rules.isEmpty()}">
+                            <strong>Rules:</strong> <span th:text="${tournament.rules}">Rules</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div th:if="${tournament.status.name() == 'REGISTRATION_OPEN'}">
+                    <form th:action="@{/player/tournaments/{id}/join(id=${tournament.tournamentId})}" method="post">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-plus-circle"></i> Join Tournament (Solo)
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Participants -->
+        <div class="card glass-card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-people"></i> Participants (<span th:text="${registrations.size()}">0</span>)</h5>
+            </div>
+            <div class="card-body">
+                <div th:if="${#lists.isEmpty(registrations)}" class="text-muted">No participants yet.</div>
+                <div class="table-responsive" th:unless="${#lists.isEmpty(registrations)}">
+                    <table class="table table-modern mb-0">
+                        <thead>
+                            <tr><th>#</th><th>Team/Player</th><th>Registered On</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="reg, iter : ${registrations}">
+                                <td th:text="${iter.count}">1</td>
+                                <td th:text="${reg.team != null ? reg.team.teamName : reg.player.gamerTag}">Name</td>
+                                <td th:text="${reg.registrationDate}">Date</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Match Schedule -->
+        <div class="card glass-card mb-4" th:if="${!#lists.isEmpty(matches)}">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-calendar-check"></i> Match Schedule</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-modern mb-0">
+                        <thead>
+                            <tr><th>Round</th><th>Teams</th><th>Time</th><th>Status</th><th>Score</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="match : ${matches}">
+                                <td th:text="${'Round ' + match.roundNumber}">Round 1</td>
+                                <td>
+                                    <span th:if="${match.teams.size() >= 2}">
+                                        <span th:text="${match.teams[0].teamName}">Team A</span> vs
+                                        <span th:text="${match.teams[1].teamName}">Team B</span>
+                                    </span>
+                                    <span th:if="${match.teams.size() < 2}" class="text-muted">TBD</span>
+                                </td>
+                                <td th:text="${#temporals.format(match.scheduledTime, 'MMM dd, HH:mm')}">Time</td>
+                                <td>
+                                    <span class="status-badge" th:classappend="${'status-' + match.status.name().toLowerCase()}"
+                                          th:text="${match.status}">Status</span>
+                                </td>
+                                <td>
+                                    <span th:if="${match.result != null}"
+                                          th:text="${match.result.scoreTeamA + ' - ' + match.result.scoreTeamB}">0 - 0</span>
+                                    <span th:if="${match.result == null}" class="text-muted">-</span>
+                                    <a th:if="${match.result != null}"
+                                       th:href="@{/player/disputes/new(matchId=${match.matchId})}"
+                                       class="btn btn-sm btn-outline-warning ms-2">
+                                        <i class="bi bi-flag-fill"></i> Raise Dispute
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <a th:href="@{/player/tournaments}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Tournaments
+        </a>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <script th:replace="~{fragments/layout :: scripts}"></script>
+</body>
+</html>

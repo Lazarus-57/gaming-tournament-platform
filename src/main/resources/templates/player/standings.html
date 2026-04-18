@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Standings')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+    <div class="container mt-4">
+        <h3 class="mb-4"><i class="bi bi-bar-chart-line"></i> Standings - <span th:text="${tournament.name}">Tournament</span></h3>
+
+        <div class="card mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Leaderboard</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr><th>Rank</th><th>Team</th><th>Wins</th><th>Losses</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="reg, iter : ${registrations}">
+                                <td th:text="${iter.count}">1</td>
+                                <td th:text="${reg.team != null ? reg.team.teamName : 'N/A'}">Team</td>
+                                <td>
+                                    <span th:text="${matches.stream().filter(m -> m.result != null && m.result.winner != null && reg.team != null && m.result.winner.teamId == reg.team.teamId).count()}">0</span>
+                                </td>
+                                <td>
+                                    <span th:text="${matches.stream().filter(m -> m.result != null && m.result.winner != null && reg.team != null && m.teams.contains(reg.team) && m.result.winner.teamId != reg.team.teamId).count()}">0</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Match Results -->
+        <div class="card" th:if="${!#lists.isEmpty(matches)}">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Completed Matches</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr><th>Round</th><th>Match</th><th>Score</th><th>Winner</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="match : ${matches}" th:if="${match.result != null}">
+                                <td th:text="${'Round ' + match.roundNumber}">Round 1</td>
+                                <td>
+                                    <span th:if="${match.teams.size() >= 2}"
+                                          th:text="${match.teams[0].teamName + ' vs ' + match.teams[1].teamName}">Match</span>
+                                </td>
+                                <td th:text="${match.result.scoreTeamA + ' - ' + match.result.scoreTeamB}">0 - 0</td>
+                                <td>
+                                    <span class="badge bg-success" th:if="${match.result.winner != null}"
+                                          th:text="${match.result.winner.teamName}">Winner</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <a th:href="@{/player/dashboard}" class="btn btn-outline-secondary mt-3">
+            <i class="bi bi-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <script th:replace="~{fragments/layout :: scripts}"></script>
+</body>
+</html>

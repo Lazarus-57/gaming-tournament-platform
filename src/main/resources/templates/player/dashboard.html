@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Player Dashboard')}"></head>
+<body class="dashboard-page">
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+    <div class="container-fluid px-4 py-4">
+        <!-- Welcome Hero Section -->
+        <div class="hero-banner player-hero mb-4">
+            <div class="hero-content">
+                <div class="hero-icon" style="background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);">
+                    <i class="bi bi-joystick"></i>
+                </div>
+                <div class="hero-text">
+                    <h1>Welcome, <span th:text="${player.gamerTag}">Player</span>!</h1>
+                    <p class="lead mb-0">
+                        <i class="bi bi-star-fill me-1" style="color: #fbbf24;"></i> 
+                        Ranking Points: <strong th:text="${player.rankingPoints}">0</strong>
+                    </p>
+                </div>
+            </div>
+            <div class="hero-actions">
+                <a th:href="@{/player/notifications}" class="btn btn-glow btn-lg position-relative" 
+                   style="background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);">
+                    <i class="bi bi-bell-fill"></i> Notifications
+                    <span th:if="${unreadCount > 0}" 
+                          class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                          th:text="${unreadCount}">0</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row g-4 mb-4">
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card-modern">
+                    <div class="stat-icon green">
+                        <i class="bi bi-controller"></i>
+                    </div>
+                    <div class="stat-details">
+                        <span class="stat-value" th:text="${registrations.size()}">0</span>
+                        <span class="stat-label">Tournaments Joined</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card-modern">
+                    <div class="stat-icon blue">
+                        <i class="bi bi-calendar-event"></i>
+                    </div>
+                    <div class="stat-details">
+                        <span class="stat-value" th:text="${upcomingTournaments.size()}">0</span>
+                        <span class="stat-label">Available Events</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card-modern">
+                    <div class="stat-icon orange">
+                        <i class="bi bi-star-fill"></i>
+                    </div>
+                    <div class="stat-details">
+                        <span class="stat-value" th:text="${player.rankingPoints}">0</span>
+                        <span class="stat-label">Ranking Points</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card-modern">
+                    <div class="stat-icon pink">
+                        <i class="bi bi-bell-fill"></i>
+                    </div>
+                    <div class="stat-details">
+                        <span class="stat-value" th:text="${unreadCount}">0</span>
+                        <span class="stat-label">New Alerts</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- My Tournaments -->
+            <div class="col-lg-7">
+                <div class="card glass-card">
+                    <div class="card-header">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h5 class="mb-0">
+                                <i class="bi bi-trophy-fill me-2"></i>My Tournaments
+                            </h5>
+                            <a th:href="@{/player/tournaments}" class="btn btn-sm btn-primary">
+                                <i class="bi bi-search"></i> Browse
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div th:if="${#lists.isEmpty(registrations)}" class="empty-state">
+                            <div class="empty-icon">
+                                <i class="bi bi-controller"></i>
+                            </div>
+                            <h4>No Tournaments Yet</h4>
+                            <p>Join your first tournament and start your competitive journey!</p>
+                            <a th:href="@{/player/tournaments}" class="btn btn-primary btn-lg">
+                                <i class="bi bi-search"></i> Find Tournaments
+                            </a>
+                        </div>
+                        <div class="table-responsive" th:unless="${#lists.isEmpty(registrations)}">
+                            <table class="table table-modern mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Tournament</th>
+                                        <th>Game</th>
+                                        <th>Status</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="reg : ${registrations}">
+                                        <td>
+                                            <div class="tournament-info">
+                                                <i class="bi bi-trophy tournament-icon"></i>
+                                                <span th:text="${reg.tournament.name}">Tournament</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="game-badge" th:text="${reg.tournament.gameTitle}">Game</span>
+                                        </td>
+                                        <td>
+                                            <span class="status-badge"
+                                                  th:classappend="${'status-' + reg.tournament.status.name().toLowerCase()}"
+                                                  th:text="${reg.tournament.status}">Status</span>
+                                        </td>
+                                        <td class="text-end">
+                                            <div class="action-buttons">
+                                                <a th:href="@{/player/tournaments/{id}(id=${reg.tournament.tournamentId})}"
+                                                   class="btn btn-sm btn-action btn-manage" title="View Details">
+                                                    <i class="bi bi-eye-fill"></i>
+                                                </a>
+                                                <a th:if="${reg.tournament.status.name() == 'ONGOING'}"
+                                                   th:href="@{/player/standings/{id}(id=${reg.tournament.tournamentId})}"
+                                                   class="btn btn-sm btn-action btn-report" title="Standings">
+                                                    <i class="bi bi-bar-chart-fill"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upcoming Tournaments -->
+            <div class="col-lg-5">
+                <div class="card glass-card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-lightning-fill me-2" style="color: #fbbf24;"></i>Hot Events
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(upcomingTournaments)}" class="text-center py-4">
+                            <p class="text-muted mb-0">No upcoming tournaments available.</p>
+                        </div>
+                        <div th:each="t : ${upcomingTournaments}" class="tournament-card mb-3">
+                            <div class="tournament-card-header" style="padding: 1rem;">
+                                <h6 class="mb-0 text-white" th:text="${t.name}">Tournament</h6>
+                            </div>
+                            <div class="tournament-card-body" style="padding: 1rem;">
+                                <div class="tournament-meta">
+                                    <span class="meta-item">
+                                        <i class="bi bi-controller"></i>
+                                        <span th:text="${t.gameTitle}">Game</span>
+                                    </span>
+                                    <span class="meta-item">
+                                        <i class="bi bi-people-fill"></i>
+                                        Team: <span th:text="${t.teamSize}">1</span>
+                                    </span>
+                                    <span class="meta-item prize-amount">
+                                        <i class="bi bi-currency-dollar"></i>
+                                        <span th:text="${#numbers.formatDecimal(t.prizePool, 0, 0)}">0</span>
+                                    </span>
+                                </div>
+                                <a th:href="@{/player/tournaments/{id}(id=${t.tournamentId})}"
+                                   class="btn btn-primary btn-sm mt-3 w-100">
+                                    <i class="bi bi-lightning-fill"></i> Join Now
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <script th:replace="~{fragments/layout :: scripts}"></script>
+</body>
+</html>

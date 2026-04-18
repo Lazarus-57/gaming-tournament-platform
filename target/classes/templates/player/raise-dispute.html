@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Raise Dispute')}"></head>
+<body class="dashboard-page">
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+    <div class="container mt-4 mb-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card glass-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0 text-white"><i class="bi bi-flag-fill"></i> Raise Dispute</h4>
+                        <a th:href="@{/player/disputes}" class="btn btn-outline-primary btn-sm">Back</a>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+                        <p class="text-muted">Match ID: <strong th:text="${match.matchId}">1</strong></p>
+                        <form th:action="@{/player/disputes}" method="post">
+                            <input type="hidden" name="matchId" th:value="${match.matchId}">
+                            <div class="mb-3">
+                                <label class="form-label">Reason *</label>
+                                <textarea name="reason" class="form-control" rows="4" required
+                                          placeholder="Explain why this result should be reviewed"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Evidence URL (optional)</label>
+                                <input type="url" name="evidenceUrl" class="form-control"
+                                       placeholder="https://example.com/evidence">
+                            </div>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="bi bi-send-fill"></i> Submit Dispute
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <script th:replace="~{fragments/layout :: scripts}"></script>
+</body>
+</html>

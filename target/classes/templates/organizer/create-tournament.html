@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Create Tournament')}"></head>
+<body class="dashboard-page">
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+    <div class="container-fluid px-4 py-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card glass-card">
+                    <div class="card-header">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h4 class="mb-0">
+                                <i class="bi bi-rocket-takeoff me-2" style="color: #8b5cf6;"></i> Create New Tournament
+                            </h4>
+                            <a th:href="@{/organizer/dashboard}" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-arrow-left"></i> Back
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body p-4">
+                        <div th:if="${error}" class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <span th:text="${error}"></span>
+                        </div>
+
+                        <form th:action="@{/organizer/tournaments/create}" method="post">
+                            <div class="row g-4">
+                                <div class="col-12">
+                                    <label for="name" class="form-label">
+                                        <i class="bi bi-trophy me-1"></i> Tournament Name *
+                                    </label>
+                                    <input type="text" class="form-control" id="name" name="name"
+                                           placeholder="e.g., Spring Championship 2026" required>
+                                </div>
+                                <div class="col-12">
+                                    <label for="gameTitle" class="form-label">
+                                        <i class="bi bi-controller me-1"></i> Game Title *
+                                    </label>
+                                    <input type="text" class="form-control" id="gameTitle" name="gameTitle"
+                                           placeholder="e.g., Valorant, CS2, League of Legends" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="format" class="form-label">
+                                        <i class="bi bi-diagram-3 me-1"></i> Tournament Format *
+                                    </label>
+                                    <input type="text" class="form-control" id="format" value="KNOCKOUT" readonly>
+                                    <small class="text-muted">Only knockout tournaments are supported.</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="teamSize" class="form-label">
+                                        <i class="bi bi-people me-1"></i> Team Size *
+                                    </label>
+                                    <input type="number" class="form-control" id="teamSize" name="teamSize"
+                                           min="1" max="20" value="1" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="registrationStart" class="form-label">
+                                        <i class="bi bi-calendar-plus me-1"></i> Registration Start *
+                                    </label>
+                                    <input type="date" class="form-control" id="registrationStart"
+                                           name="registrationStart" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="registrationEnd" class="form-label">
+                                        <i class="bi bi-calendar-check me-1"></i> Registration End *
+                                    </label>
+                                    <input type="date" class="form-control" id="registrationEnd"
+                                           name="registrationEnd" required>
+                                </div>
+                                <div class="col-12">
+                                    <label for="prizePool" class="form-label">
+                                        <i class="bi bi-currency-dollar me-1"></i> Prize Pool ($) *
+                                    </label>
+                                    <input type="number" class="form-control" id="prizePool" name="prizePool"
+                                           min="0" step="0.01" value="0" required>
+                                </div>
+                                <div class="col-12">
+                                    <label for="rules" class="form-label">
+                                        <i class="bi bi-file-text me-1"></i> Rules &amp; Guidelines
+                                    </label>
+                                    <textarea class="form-control" id="rules" name="rules" rows="4"
+                                              placeholder="Enter tournament rules and guidelines..."></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <div class="d-flex gap-3">
+                                        <button type="submit" class="btn btn-primary btn-lg">
+                                            <i class="bi bi-rocket-takeoff me-2"></i> Launch Tournament
+                                        </button>
+                                        <a th:href="@{/organizer/dashboard}" class="btn btn-outline-secondary btn-lg">
+                                            Cancel
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <script th:replace="~{fragments/layout :: scripts}"></script>
+</body>
+</html>

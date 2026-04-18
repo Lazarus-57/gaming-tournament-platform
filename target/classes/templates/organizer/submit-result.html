@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Submit Result')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-white">
+                        <h4 class="mb-0"><i class="bi bi-journal-check"></i> Submit Match Result</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center mb-4">
+                            <h5>Round <span th:text="${match.roundNumber}">1</span></h5>
+                            <div class="d-flex justify-content-center align-items-center gap-3" th:if="${match.teams.size() >= 2}">
+                                <div class="text-center">
+                                    <h5 class="text-primary" th:text="${match.teams[0].teamName}">Team A</h5>
+                                </div>
+                                <span class="fs-4 text-muted">VS</span>
+                                <div class="text-center">
+                                    <h5 class="text-danger" th:text="${match.teams[1].teamName}">Team B</h5>
+                                </div>
+                            </div>
+                        </div>
+
+                        <form th:action="@{/organizer/tournaments/{tid}/matches/{mid}/result(tid=${tournamentId}, mid=${match.matchId})}"
+                              method="post">
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <label class="form-label" th:if="${match.teams.size() >= 2}"
+                                           th:text="${match.teams[0].teamName + ' Score'}">Team A Score</label>
+                                    <input type="number" class="form-control form-control-lg text-center"
+                                           name="scoreA" min="0" value="0" required>
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label" th:if="${match.teams.size() >= 2}"
+                                           th:text="${match.teams[1].teamName + ' Score'}">Team B Score</label>
+                                    <input type="number" class="form-control form-control-lg text-center"
+                                           name="scoreB" min="0" value="0" required>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-check-circle"></i> Submit Result
+                                </button>
+                                <a th:href="@{/organizer/tournaments/{id}(id=${tournamentId})}"
+                                   class="btn btn-outline-secondary">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <script th:replace="~{fragments/layout :: scripts}"></script>
+</body>
+</html>

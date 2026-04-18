@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Tournament Report')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+    <div class="container mt-4">
+        <h3 class="mb-4"><i class="bi bi-file-earmark-bar-graph"></i> Tournament Report</h3>
+
+        <!-- Tournament Summary -->
+        <div class="card mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0" th:text="${tournament.name}">Tournament</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="stat-number" th:text="${registrations.size()}">0</div>
+                            <div class="stat-label">Participants</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card green">
+                            <div class="stat-number" th:text="${completedMatches}">0</div>
+                            <div class="stat-label">Completed Matches</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card blue">
+                            <div class="stat-number" th:text="${totalMatches}">0</div>
+                            <div class="stat-label">Total Matches</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card pink">
+                            <div class="stat-number">$<span th:text="${tournament.prizePool}">0</span></div>
+                            <div class="stat-label">Prize Pool</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Match Details -->
+        <div class="card mb-4" th:if="${!#lists.isEmpty(matches)}">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Match Results</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr><th>Round</th><th>Match</th><th>Score</th><th>Winner</th><th>Status</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="match : ${matches}">
+                                <td th:text="${'Round ' + match.roundNumber}">Round</td>
+                                <td>
+                                    <span th:if="${match.teams.size() >= 2}"
+                                          th:text="${match.teams[0].teamName + ' vs ' + match.teams[1].teamName}">Match</span>
+                                    <span th:if="${match.teams.size() < 2}" class="text-muted">TBD</span>
+                                </td>
+                                <td>
+                                    <span th:if="${match.result != null}"
+                                          th:text="${match.result.scoreTeamA + ' - ' + match.result.scoreTeamB}">-</span>
+                                    <span th:if="${match.result == null}">-</span>
+                                </td>
+                                <td>
+                                    <span th:if="${match.result != null && match.result.winner != null}"
+                                          th:text="${match.result.winner.teamName}">Winner</span>
+                                    <span th:if="${match.result == null}">-</span>
+                                </td>
+                                <td>
+                                    <span class="status-badge" th:classappend="${'status-' + match.status.name().toLowerCase()}"
+                                          th:text="${match.status}">Status</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a th:href="@{/organizer/tournaments/{id}(id=${tournament.tournamentId})}"
+               class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back</a>
+            <button onclick="window.print()" class="btn btn-outline-primary">
+                <i class="bi bi-printer"></i> Print Report
+            </button>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <script th:replace="~{fragments/layout :: scripts}"></script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+com\tournament\service\MatchResultTest.class
+com\tournament\service\AuthManagerTest.class
+com\tournament\service\DisputeServiceTest.class
+com\tournament\service\TournamentServiceTest.class

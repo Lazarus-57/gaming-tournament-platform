@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('All Tournaments')}"></head>
+<body class="dashboard-page">
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+    <div class="container mt-4 mb-4">
+        <h3 class="mb-4 text-white"><i class="bi bi-trophy"></i> All Tournaments</h3>
+
+        <div class="card glass-card">
+            <div class="card-body">
+                <div th:if="${#lists.isEmpty(tournaments)}" class="text-center text-muted py-4">
+                    No tournaments in the system yet.
+                </div>
+                <div class="table-responsive" th:unless="${#lists.isEmpty(tournaments)}">
+                    <table class="table table-modern mb-0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Game</th>
+                                <th>Format</th>
+                                <th>Organizer</th>
+                                <th>Status</th>
+                                <th>Prize Pool</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="t : ${tournaments}">
+                                <td th:text="${t.tournamentId}">1</td>
+                                <td th:text="${t.name}">Name</td>
+                                <td th:text="${t.gameTitle}">Game</td>
+                                <td th:text="${t.format}">Format</td>
+                                <td th:text="${t.organizer != null ? t.organizer.organizationName : 'N/A'}">Org</td>
+                                <td>
+                                    <span class="status-badge" th:classappend="${'status-' + t.status.name().toLowerCase()}"
+                                          th:text="${t.status}">Status</span>
+                                </td>
+                                <td>$<span th:text="${t.prizePool}">0</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <script th:replace="~{fragments/layout :: scripts}"></script>
+</body>
+</html>

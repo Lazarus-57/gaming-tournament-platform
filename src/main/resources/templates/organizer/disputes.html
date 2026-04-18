@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Review Disputes')}"></head>
+<body class="dashboard-page">
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+    <div class="container mt-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="text-white mb-0"><i class="bi bi-shield-exclamation"></i> Dispute Review Queue</h3>
+            <a th:href="@{/organizer/dashboard}" class="btn btn-outline-primary"><i class="bi bi-arrow-left"></i> Back</a>
+        </div>
+
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <div class="card glass-card">
+            <div class="card-header"><h5 class="mb-0">All Disputes</h5></div>
+            <div class="card-body p-0">
+                <div th:if="${#lists.isEmpty(disputes)}" class="empty-state">
+                    <h4>No disputes in your tournaments</h4>
+                </div>
+                <div class="table-responsive" th:unless="${#lists.isEmpty(disputes)}">
+                    <table class="table table-modern mb-0">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Match</th>
+                            <th>Raised By</th>
+                            <th>Reason</th>
+                            <th>Status</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="d : ${disputes}">
+                            <td th:text="${d.disputeId}">1</td>
+                            <td th:text="${d.match != null ? d.match.matchId : 'N/A'}">1</td>
+                            <td th:text="${d.raisedBy != null ? d.raisedBy.gamerTag : 'N/A'}">Player</td>
+                            <td th:text="${d.reason}">Reason</td>
+                            <td>
+                                <span class="status-badge" th:classappend="${'status-' + d.status.name().toLowerCase()}"
+                                      th:text="${d.status}">RAISED</span>
+                            </td>
+                            <td class="text-end">
+                                <div class="d-inline-flex gap-2" th:if="${d.status.name() == 'RAISED' || d.status.name() == 'UNDER_REVIEW'}">
+                                    <form th:if="${d.status.name() == 'RAISED'}" th:action="@{/organizer/disputes/{id}/review(id=${d.disputeId})}" method="post">
+                                        <button type="submit" class="btn btn-sm btn-info">Review</button>
+                                    </form>
+                                    <form th:action="@{/organizer/disputes/{id}/accept(id=${d.disputeId})}" method="post" class="d-inline-flex gap-2">
+                                        <input type="number" class="form-control form-control-sm" name="scoreA" min="0" required placeholder="A">
+                                        <input type="number" class="form-control form-control-sm" name="scoreB" min="0" required placeholder="B">
+                                        <button type="submit" class="btn btn-sm btn-success">Accept</button>
+                                    </form>
+                                    <form th:action="@{/organizer/disputes/{id}/reject(id=${d.disputeId})}" method="post">
+                                        <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+                                    </form>
+                                </div>
+                                <span th:if="${d.status.name() == 'CLOSED'}" class="text-muted">Closed</span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <script th:replace="~{fragments/layout :: scripts}"></script>
+</body>
+</html>

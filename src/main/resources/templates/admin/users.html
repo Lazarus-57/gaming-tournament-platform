@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Manage Users')}"></head>
+<body class="dashboard-page">
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+    <div class="container-fluid px-4 py-4">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h3 class="text-white mb-0">
+                <i class="bi bi-people-fill me-2" style="color: #8b5cf6;"></i>User Management
+            </h3>
+            <a th:href="@{/admin/dashboard}" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="card glass-card">
+            <div class="card-header">
+                <div class="d-flex align-items-center justify-content-between">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person-lines-fill me-2"></i> All Users
+                    </h5>
+                    <span class="badge bg-primary" th:text="${users.size()} + ' users'">0 users</span>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-modern mb-0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>User</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="user : ${users}">
+                                <td>
+                                    <span class="text-muted">#</span><span th:text="${user.userId}">1</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="stat-icon" style="width: 35px; height: 35px; font-size: 0.9rem;"
+                                             th:classappend="${user.role == 'ADMIN' ? 'orange' : (user.role == 'ORGANIZER' ? 'purple' : 'green')}">
+                                            <i th:classappend="${user.role == 'ADMIN' ? 'bi bi-shield-fill' : (user.role == 'ORGANIZER' ? 'bi bi-clipboard-check' : 'bi bi-controller')}"></i>
+                                        </div>
+                                        <span th:text="${user.name}">Name</span>
+                                    </div>
+                                </td>
+                                <td th:text="${user.email}">Email</td>
+                                <td>
+                                    <span class="status-badge"
+                                          th:classappend="${user.role == 'ADMIN' ? 'status-cancelled' : (user.role == 'ORGANIZER' ? 'status-upcoming' : 'status-ongoing')}"
+                                          th:text="${user.role}">Role</span>
+                                </td>
+                                <td>
+                                    <span class="status-badge"
+                                          th:classappend="${user.accountState.name() == 'ACTIVE' ? 'status-approved' : 'status-rejected'}"
+                                          th:text="${user.accountState}">Status</span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="action-buttons">
+                                        <form th:action="@{/admin/users/{id}/toggle-status(id=${user.userId})}"
+                                              method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-action"
+                                                    th:title="${user.accountState.name() == 'ACTIVE' ? 'Suspend User' : 'Activate User'}"
+                                                    style="border-color: var(--accent-yellow); color: var(--accent-yellow);">
+                                                <i th:classappend="${user.accountState.name() == 'ACTIVE' ? 'bi bi-pause-fill' : 'bi bi-play-fill'}"></i>
+                                            </button>
+                                        </form>
+                                        <form th:action="@{/admin/users/{id}/delete(id=${user.userId})}"
+                                              method="post" class="d-inline"
+                                              onsubmit="return confirm('Are you sure you want to delete this user? This action cannot be undone.');">
+                                            <button type="submit" class="btn btn-sm btn-action btn-delete" title="Delete User">
+                                                <i class="bi bi-trash-fill"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <script th:replace="~{fragments/layout :: scripts}"></script>
+</body>
+</html>

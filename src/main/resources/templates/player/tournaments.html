@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Browse Tournaments')}"></head>
+<body class="dashboard-page">
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+    <div class="container-fluid px-4 py-4">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h3 class="text-white mb-0">
+                <i class="bi bi-trophy-fill me-2" style="color: #fbbf24;"></i>All Tournaments
+            </h3>
+            <a th:href="@{/player/dashboard}" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+
+        <div class="row g-4">
+            <div th:each="t : ${tournaments}" class="col-xl-4 col-lg-6">
+                <div class="tournament-card">
+                    <div class="tournament-card-header">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h5 class="mb-0 text-white" th:text="${t.name}">Tournament</h5>
+                            <span class="status-badge"
+                                  th:classappend="${'status-' + t.status.name().toLowerCase()}"
+                                  th:text="${t.status}">Status</span>
+                        </div>
+                        <span class="game-badge mt-2 d-inline-block" th:text="${t.gameTitle}">Game</span>
+                    </div>
+                    <div class="tournament-card-body">
+                        <div class="tournament-meta">
+                            <span class="meta-item">
+                                <i class="bi bi-diagram-3-fill"></i>
+                                <span th:text="${t.format}">Format</span>
+                            </span>
+                            <span class="meta-item">
+                                <i class="bi bi-people-fill"></i>
+                                Team: <span th:text="${t.teamSize}">1</span>
+                            </span>
+                        </div>
+                        <div class="tournament-meta mt-2">
+                            <span class="meta-item prize-amount">
+                                <i class="bi bi-currency-dollar"></i>
+                                <span th:text="${#numbers.formatDecimal(t.prizePool, 0, 0)}">0</span>
+                            </span>
+                            <span class="meta-item">
+                                <i class="bi bi-calendar-event"></i>
+                                <span th:text="${t.registrationEnd}">End</span>
+                            </span>
+                        </div>
+                        <a th:href="@{/player/tournaments/{id}(id=${t.tournamentId})}"
+                           class="btn btn-primary w-100 mt-3">
+                            <i class="bi bi-eye-fill me-1"></i> View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(tournaments)}" class="empty-state">
+            <div class="empty-icon">
+                <i class="bi bi-controller"></i>
+            </div>
+            <h4>No Tournaments Available</h4>
+            <p>Check back later for exciting gaming events!</p>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <script th:replace="~{fragments/layout :: scripts}"></script>
+</body>
+</html>

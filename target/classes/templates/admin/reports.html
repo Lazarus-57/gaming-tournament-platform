@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Reports & Analytics')}"></head>
+<body class="dashboard-page">
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+    <div class="container-fluid px-4 py-4">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h3 class="text-white mb-0">
+                <i class="bi bi-graph-up-arrow me-2" style="color: #f97316;"></i>Analytics &amp; Reports
+            </h3>
+            <div>
+                <button onclick="window.print()" class="btn btn-outline-primary me-2">
+                    <i class="bi bi-printer"></i> Print Report
+                </button>
+                <a th:href="@{/admin/dashboard}" class="btn btn-outline-primary">
+                    <i class="bi bi-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+        <!-- Overview Stats -->
+        <div class="row g-4 mb-4">
+            <div class="col-xl-4 col-md-6">
+                <div class="stat-card-modern">
+                    <div class="stat-icon purple">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    <div class="stat-details">
+                        <span class="stat-value" th:text="${userCount}">0</span>
+                        <span class="stat-label">Total Users</span>
+                    </div>
+                    <div class="stat-trend">
+                        <i class="bi bi-person-plus"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-md-6">
+                <div class="stat-card-modern">
+                    <div class="stat-icon green">
+                        <i class="bi bi-trophy-fill"></i>
+                    </div>
+                    <div class="stat-details">
+                        <span class="stat-value" th:text="${tournamentCount}">0</span>
+                        <span class="stat-label">Total Tournaments</span>
+                    </div>
+                    <div class="stat-trend">
+                        <i class="bi bi-graph-up"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-4 col-md-6">
+                <div class="stat-card-modern">
+                    <div class="stat-icon pink">
+                        <i class="bi bi-controller"></i>
+                    </div>
+                    <div class="stat-details">
+                        <span class="stat-value" th:text="${completedMatches}">0</span>
+                        <span class="stat-label">Completed Matches</span>
+                    </div>
+                    <div class="stat-trend">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tournament Breakdown -->
+        <div class="card glass-card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-pie-chart-fill me-2" style="color: #06b6d4;"></i>Tournament Breakdown
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-4 text-center">
+                    <div class="col-md-4">
+                        <div class="stat-card-modern" style="flex-direction: column; align-items: center; text-align: center;">
+                            <div class="stat-icon orange mb-3" style="width: 70px; height: 70px; font-size: 1.8rem;">
+                                <i class="bi bi-hourglass-split"></i>
+                            </div>
+                            <span class="stat-value" style="font-size: 2.5rem;" th:text="${upcomingCount}">0</span>
+                            <span class="stat-label">Upcoming Events</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card-modern" style="flex-direction: column; align-items: center; text-align: center;">
+                            <div class="stat-icon blue mb-3" style="width: 70px; height: 70px; font-size: 1.8rem;">
+                                <i class="bi bi-broadcast"></i>
+                            </div>
+                            <span class="stat-value" style="font-size: 2.5rem;" th:text="${ongoingCount}">0</span>
+                            <span class="stat-label">Live Now</span>
+                            <div class="live-pulse mt-2">
+                                <i class="bi bi-circle-fill" style="color: #10b981; font-size: 0.5rem;"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card-modern" style="flex-direction: column; align-items: center; text-align: center;">
+                            <div class="stat-icon green mb-3" style="width: 70px; height: 70px; font-size: 1.8rem;">
+                                <i class="bi bi-patch-check-fill"></i>
+                            </div>
+                            <span class="stat-value" style="font-size: 2.5rem;" th:text="${completedTournaments}">0</span>
+                            <span class="stat-label">Completed</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats Summary -->
+        <div class="card glass-card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-clipboard-data me-2" style="color: #ec4899;"></i>Platform Summary
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li class="d-flex justify-content-between align-items-center py-2 border-bottom" style="border-color: rgba(255,255,255,0.1) !important;">
+                                <span class="text-muted">Total Registered Users</span>
+                                <span class="text-white fw-bold" th:text="${userCount}">0</span>
+                            </li>
+                            <li class="d-flex justify-content-between align-items-center py-2 border-bottom" style="border-color: rgba(255,255,255,0.1) !important;">
+                                <span class="text-muted">Total Tournaments Created</span>
+                                <span class="text-white fw-bold" th:text="${tournamentCount}">0</span>
+                            </li>
+                            <li class="d-flex justify-content-between align-items-center py-2">
+                                <span class="text-muted">Total Matches Played</span>
+                                <span class="text-white fw-bold" th:text="${completedMatches}">0</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li class="d-flex justify-content-between align-items-center py-2 border-bottom" style="border-color: rgba(255,255,255,0.1) !important;">
+                                <span class="text-muted">Upcoming Tournaments</span>
+                                <span class="status-badge status-upcoming" th:text="${upcomingCount}">0</span>
+                            </li>
+                            <li class="d-flex justify-content-between align-items-center py-2 border-bottom" style="border-color: rgba(255,255,255,0.1) !important;">
+                                <span class="text-muted">Live Tournaments</span>
+                                <span class="status-badge status-ongoing" th:text="${ongoingCount}">0</span>
+                            </li>
+                            <li class="d-flex justify-content-between align-items-center py-2">
+                                <span class="text-muted">Completed Tournaments</span>
+                                <span class="status-badge status-completed" th:text="${completedTournaments}">0</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card glass-card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-exclamation-diamond-fill me-2" style="color: #f97316;"></i>Dispute Analytics
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3 text-center">
+                    <div class="col-md-4">
+                        <div class="status-badge status-pending">Raised: <span th:text="${raisedDisputes}">0</span></div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="status-badge status-under_review">Under Review: <span th:text="${underReviewDisputes}">0</span></div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="status-badge status-completed">Closed: <span th:text="${closedDisputes}">0</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+    <script th:replace="~{fragments/layout :: scripts}"></script>
+</body>
+</html>
