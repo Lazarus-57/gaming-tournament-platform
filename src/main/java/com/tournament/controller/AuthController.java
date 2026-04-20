@@ -1,6 +1,5 @@
 package com.tournament.controller;
 
-import com.tournament.model.User;
 import com.tournament.model.enums.RoleType;
 import com.tournament.service.AuthManager;
 import com.tournament.service.UserService;

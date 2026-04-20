@@ -2,6 +2,8 @@ package com.tournament.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Comparator;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -253,14 +255,41 @@ public class TournamentService {
     }
 
     public Result submitResult(Integer matchId, int scoreA, int scoreB) {
+        return submitResult(matchId, scoreA, scoreB, null);
+    }
+
+    public Result submitResult(Integer matchId, int scoreA, int scoreB, Integer tieBreakerWinnerTeamId) {
         Match match = matchRepository.findById(matchId)
                 .orElseThrow(() -> new IllegalArgumentException("Match not found"));
+
+        if (match.getResult() != null || match.getStatus() == MatchStatus.COMPLETED
+                || match.getStatus() == MatchStatus.VERIFIED) {
+            throw new IllegalStateException("Result already submitted for this match");
+        }
 
         if (match.getTeams().size() < 2) {
             throw new IllegalArgumentException("Match does not have two teams assigned");
         }
 
-        Team winner = (scoreA > scoreB) ? match.getTeams().get(0) : match.getTeams().get(1);
+        Team teamA = match.getTeams().get(0);
+        Team teamB = match.getTeams().get(1);
+        Team winner;
+
+        if (scoreA == scoreB) {
+            if (tieBreakerWinnerTeamId == null) {
+                throw new IllegalArgumentException("Scores are tied. Select a winner for tie-break.");
+            }
+
+            if (Objects.equals(teamA.getTeamId(), tieBreakerWinnerTeamId)) {
+                winner = teamA;
+            } else if (Objects.equals(teamB.getTeamId(), tieBreakerWinnerTeamId)) {
+                winner = teamB;
+            } else {
+                throw new IllegalArgumentException("Invalid tie-break winner selected");
+            }
+        } else {
+            winner = (scoreA > scoreB) ? teamA : teamB;
+        }
 
         Result result = new Result(scoreA, scoreB, match, winner);
         result.validateScores();
@@ -272,6 +301,7 @@ public class TournamentService {
         }
         match.complete();
         matchRepository.save(match);
+        advanceWinnerToNextRound(match, winner);
 
         // Notify observers
         Tournament tournament = match.getBracket().getTournament();
@@ -333,5 +363,61 @@ public class TournamentService {
 
     public long getOngoingTournamentCount() {
         return tournamentRepository.countByStatus(TournamentStatus.ONGOING);
+    }
+
+    private void advanceWinnerToNextRound(Match completedMatch, Team winner) {
+        if (completedMatch.getBracket() == null || completedMatch.getBracket().getTournament() == null) {
+            return;
+        }
+
+        Integer tournamentId = completedMatch.getBracket().getTournament().getTournamentId();
+        Integer bracketId = completedMatch.getBracket().getBracketId();
+        if (tournamentId == null || bracketId == null) {
+            return;
+        }
+
+        List<Match> bracketMatches = matchRepository.findByBracket_Tournament_TournamentId(tournamentId).stream()
+                .filter(m -> m.getBracket() != null && Objects.equals(m.getBracket().getBracketId(), bracketId))
+                .toList();
+
+        List<Match> currentRoundMatches = bracketMatches.stream()
+                .filter(m -> m.getRoundNumber() == completedMatch.getRoundNumber())
+                .sorted(Comparator.comparing(Match::getScheduledTime, Comparator.nullsLast(Comparator.naturalOrder()))
+                        .thenComparing(Match::getMatchId, Comparator.nullsLast(Integer::compareTo)))
+                .toList();
+
+        int currentMatchIndex = -1;
+        for (int i = 0; i < currentRoundMatches.size(); i++) {
+            if (Objects.equals(currentRoundMatches.get(i).getMatchId(), completedMatch.getMatchId())) {
+                currentMatchIndex = i;
+                break;
+            }
+        }
+        if (currentMatchIndex < 0) {
+            return;
+        }
+
+        List<Match> nextRoundMatches = bracketMatches.stream()
+                .filter(m -> m.getRoundNumber() == completedMatch.getRoundNumber() + 1)
+                .sorted(Comparator.comparing(Match::getScheduledTime, Comparator.nullsLast(Comparator.naturalOrder()))
+                        .thenComparing(Match::getMatchId, Comparator.nullsLast(Integer::compareTo)))
+                .toList();
+
+        if (nextRoundMatches.isEmpty()) {
+            return;
+        }
+
+        Match targetNextRoundMatch = nextRoundMatches.get(currentMatchIndex / 2);
+        boolean alreadyAdded = targetNextRoundMatch.getTeams().stream()
+                .anyMatch(t -> Objects.equals(t.getTeamId(), winner.getTeamId()));
+        if (alreadyAdded) {
+            return;
+        }
+        if (targetNextRoundMatch.getTeams().size() >= 2) {
+            throw new IllegalStateException("Next-round match already has two teams assigned");
+        }
+
+        targetNextRoundMatch.getTeams().add(winner);
+        matchRepository.save(targetNextRoundMatch);
     }
 }

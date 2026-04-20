@@ -1,25 +1,17 @@
 package com.tournament.controller;
 
-import java.util.List;
-
-import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import com.tournament.model.Match;
-import com.tournament.model.Notification;
-import com.tournament.model.Player;
-import com.tournament.model.Registration;
-import com.tournament.model.Tournament;
+import com.tournament.model.*;
 import com.tournament.model.enums.TournamentStatus;
 import com.tournament.repository.PlayerRepository;
 import com.tournament.service.INotificationService;
 import com.tournament.service.TournamentService;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/player")
@@ -30,8 +22,8 @@ public class PlayerController {
     private final PlayerRepository playerRepository;
 
     public PlayerController(TournamentService tournamentService,
-            INotificationService notificationService,
-            PlayerRepository playerRepository) {
+                            INotificationService notificationService,
+                            PlayerRepository playerRepository) {
         this.tournamentService = tournamentService;
         this.notificationService = notificationService;
         this.playerRepository = playerRepository;
@@ -39,7 +31,7 @@ public class PlayerController {
 
     private Player getCurrentPlayer(Authentication auth) {
         return playerRepository.findByEmail(auth.getName())
-                .orElseThrow(() -> new IllegalStateException("Player not found"));
+            .orElseThrow(() -> new IllegalStateException("Player not found"));
     }
 
     @GetMapping("/dashboard")
@@ -69,7 +61,7 @@ public class PlayerController {
     public String viewTournament(@PathVariable Integer id, Authentication auth, Model model) {
         Player player = getCurrentPlayer(auth);
         Tournament tournament = tournamentService.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Tournament not found"));
+            .orElseThrow(() -> new IllegalArgumentException("Tournament not found"));
         List<Match> matches = tournamentService.getMatches(id);
         List<Registration> registrations = tournamentService.getApprovedRegistrations(id);
 
@@ -82,7 +74,7 @@ public class PlayerController {
 
     @PostMapping("/tournaments/{id}/join")
     public String joinTournament(@PathVariable Integer id, Authentication auth,
-            RedirectAttributes redirectAttributes) {
+                                 RedirectAttributes redirectAttributes) {
         try {
             Player player = getCurrentPlayer(auth);
             tournamentService.registerSoloPlayer(id, player);
@@ -109,25 +101,11 @@ public class PlayerController {
         return "redirect:/player/notifications";
     }
 
-    @PostMapping("/notifications/{id}/retry")
-    public String retryNotification(@PathVariable Integer id,
-            Authentication auth,
-            RedirectAttributes redirectAttributes) {
-        try {
-            Player player = getCurrentPlayer(auth);
-            notificationService.retryFailedNotification(id, player.getUserId());
-            redirectAttributes.addFlashAttribute("success", "Notification retry queued successfully.");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-        }
-        return "redirect:/player/notifications";
-    }
-
     @GetMapping("/standings/{tournamentId}")
     public String viewStandings(@PathVariable Integer tournamentId, Authentication auth, Model model) {
         Player player = getCurrentPlayer(auth);
         Tournament tournament = tournamentService.findById(tournamentId)
-                .orElseThrow(() -> new IllegalArgumentException("Tournament not found"));
+            .orElseThrow(() -> new IllegalArgumentException("Tournament not found"));
         List<Match> matches = tournamentService.getMatches(tournamentId);
         List<Registration> registrations = tournamentService.getApprovedRegistrations(tournamentId);
 

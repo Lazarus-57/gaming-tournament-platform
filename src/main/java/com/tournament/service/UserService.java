@@ -5,7 +5,6 @@ import com.tournament.model.enums.AccountState;
 import com.tournament.model.enums.RoleType;
 import com.tournament.repository.UserRepository;
 import com.tournament.service.factory.UserFactory;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,12 +17,10 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserFactory userFactory;
-    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, UserFactory userFactory, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, UserFactory userFactory) {
         this.userRepository = userRepository;
         this.userFactory = userFactory;
-        this.passwordEncoder = passwordEncoder;
     }
 
     public User registerUser(RoleType role, String name, String email, String rawPassword, String extra) {

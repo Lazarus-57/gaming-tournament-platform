@@ -41,6 +41,17 @@
                                            name="scoreB" min="0" value="0" required>
                                 </div>
                             </div>
+                            <div class="mb-3" th:if="${match.teams.size() >= 2}">
+                                <label class="form-label" for="tieBreakerWinnerTeamId">
+                                    Tie-break Winner (only if scores are equal)
+                                </label>
+                                <select class="form-select" id="tieBreakerWinnerTeamId" name="tieBreakerWinnerTeamId">
+                                    <option value="">Select winner for tie case</option>
+                                    <option th:value="${match.teams[0].teamId}" th:text="${match.teams[0].teamName}"></option>
+                                    <option th:value="${match.teams[1].teamId}" th:text="${match.teams[1].teamName}"></option>
+                                </select>
+                                <div class="form-text">If scores differ, this field is ignored.</div>
+                            </div>
                             <div class="d-flex gap-2">
                                 <button type="submit" class="btn btn-success">
                                     <i class="bi bi-check-circle"></i> Submit Result

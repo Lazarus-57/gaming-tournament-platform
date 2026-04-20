@@ -14,7 +14,7 @@
 ## Tech Stack
 - **Backend:** Java 17+ with Spring Boot 3.2 (MVC Architecture)
 - **Frontend:** Thymeleaf + Bootstrap 5
-- **Database:** H2 In-Memory Database
+- **Database:** H2 File-Based Database
 - **Security:** Spring Security with BCrypt password hashing
 - **Build Tool:** Apache Maven
 
@@ -118,6 +118,6 @@ src/main/resources/
 
 ## H2 Database Console
 Available at **http://localhost:8080/h2-console** when the app is running.
-- JDBC URL: `jdbc:h2:mem:tournamentdb`
+- JDBC URL: `jdbc:h2:file:./data/tournamentdb;AUTO_SERVER=TRUE`
 - Username: `sa`
 - Password: *(leave empty)*

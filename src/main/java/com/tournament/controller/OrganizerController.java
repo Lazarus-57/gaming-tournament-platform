@@ -181,11 +181,12 @@ public class OrganizerController {
                                @PathVariable Integer matchId,
                                @RequestParam int scoreA,
                                @RequestParam int scoreB,
+                               @RequestParam(required = false) Integer tieBreakerWinnerTeamId,
                                RedirectAttributes redirectAttributes) {
         try {
-            tournamentService.submitResult(matchId, scoreA, scoreB);
+            tournamentService.submitResult(matchId, scoreA, scoreB, tieBreakerWinnerTeamId);
             redirectAttributes.addFlashAttribute("success", "Result submitted successfully!");
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | IllegalStateException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/organizer/tournaments/" + tournamentId;

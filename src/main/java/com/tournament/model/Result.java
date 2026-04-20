@@ -58,8 +58,5 @@ public class Result {
         if (scoreTeamA < 0 || scoreTeamB < 0) {
             throw new IllegalArgumentException("Scores cannot be negative");
         }
-        if (scoreTeamA == scoreTeamB) {
-            throw new IllegalArgumentException("Draws are not allowed for this result");
-        }
     }
 }

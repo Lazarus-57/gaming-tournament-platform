@@ -1,6 +1,5 @@
 package com.tournament.controller;
 
-import com.tournament.model.Dispute;
 import com.tournament.model.Match;
 import com.tournament.model.Organizer;
 import com.tournament.model.Player;
